@@ -1,8 +1,9 @@
-from django.urls import re_path
+from django.urls import re_path, path, include
+from rest_framework.routers import DefaultRouter
 from . import views
 
 urlpatterns = [
-    re_path('login', views.login_user, name="login"),
-    re_path('signup', views.signup_user, name="signup"),
-    re_path('test_token', views.test_token)
+    re_path('login', views.login_user.as_view(), name="login"),
+    re_path('signup', views.SignupUser.as_view(), name="signup"),
+    path('profile', views.profile_user.as_view(), name="user-profile")
 ]
