@@ -1,20 +1,21 @@
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer, ProfileSerializer
 from django.contrib.auth.models import User
 from .models import Profile
 
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate
 
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
-class login_user(APIView):
+class LoginUser(APIView):
     def get(self, request):
         return Response({})
     
@@ -31,7 +32,8 @@ class login_user(APIView):
             user
 
 
-class profile_user(APIView):
+
+class ProfileUser(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication] #auth classnya bro
     permission_classes = [IsAuthenticated] #permission
 
@@ -45,7 +47,7 @@ class profile_user(APIView):
         return Response(serializer.data)
     
 
-class SignupUser(APIView):
+class RegisterUser(APIView):
     """
     Ini format sign up nya
         {
@@ -69,7 +71,9 @@ class SignupUser(APIView):
         if serializer.is_valid():
             serializer.save()
             user = User.objects.get(username=serializer.data['user']['username'])
-            user.set_password(user.password)
+            print(serializer.data['user']['username'])
+            print(user)
+            user.set_password(serializer.data['user']['password'])
             user.save()
             token, created = Token.objects.get_or_create(user=user)
 

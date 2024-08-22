@@ -6,7 +6,7 @@ from .models import Profile
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer()
@@ -33,6 +33,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
         user.email = user_data.get('email', user.email)
         user.first_name = user_data.get('first_name', user.first_name)
         user.last_name = user_data.get('last_name', user.last_name)
+        user.password = user_data.get('password', user.password)
         user.save()
 
         return instance
