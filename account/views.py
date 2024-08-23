@@ -59,7 +59,6 @@ class RegisterUser(APIView):
                 \t"last_name": "Doe"
             },
             "bio": "Software Developer",
-            "mqtttoken": "TOKENMQTT"
         }
         """
 

@@ -13,7 +13,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['user', 'bio', 'mqtttoken']
+        fields = ['user', 'bio']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -26,7 +26,6 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
         user = instance.user
 
         instance.bio = validated_data.get('bio', instance.bio)
-        instance.mqtttoken = validated_data.get('mqtttoken', instance.mqtttoken)
         instance.save()
 
         user.username = user_data.get('username', user.username)

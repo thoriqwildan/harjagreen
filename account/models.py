@@ -1,24 +1,22 @@
 from django.db import models
 from django.contrib.auth.models import User
-import random
-import string
+from PIL import Image
+import os
+from django.conf import settings
+
+def UserDirectoryPath(instance, filename):
+    profile_pic_name = 'user_{0}/profile.jpg'.format(instance.user.id)
+    full_path = os.path.join(settings.MEDIA_ROOT, profile_pic_name)
+
+    if os.path.exists(full_path):
+        os.remove(full_path)
+
+    return profile_pic_name
 
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(null=True, blank=True)
-    mqtttoken = models.CharField(max_length=7, unique=True, null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        if not self.mqtttoken:
-            self.mqtttoken = self.generate_unique_mqtttoken()
-        super().save(*args, **kwargs)
-
-    def generate_unique_mqtttoken(self):
-        while True:
-            token = ''.join(random.choices(string.ascii_uppercase, k=7))
-            if not Profile.objects.filter(mqtttoken=token).exists():
-                return token
-            
     def __str__(self):
         return f'{self.user.username}\'s Profile'
