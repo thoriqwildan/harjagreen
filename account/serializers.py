@@ -8,31 +8,58 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
 
-class ProfileSerializer(serializers.HyperlinkedModelSerializer):
-    user = UserSerializer()
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        username = data.get('username')
+        password = data.get('password')
+
+        if username and password:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                raise serializers.ValidationError("User not found.")
+            
+            if not user.check_password(password):
+                raise serializers.ValidationError("Incorrect Password")
+            
+            data['user'] = user
+        else:
+            raise serializers.ValidationError('Must include username and password')
+        return data
+
+class ProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
 
     class Meta:
         model = Profile
-        fields = ['user', 'bio']
+        fields = ['username', 'email', 'bio']
+    
+class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    bio = serializers.CharField(required=False, allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'bio']
 
     def create(self, validated_data):
-        user_data = validated_data.pop('user')
-        user = User.objects.create(**user_data)
-        profile = Profile.objects.create(user=user, **validated_data)
-        return profile
-    
-    def update(self, instance, validated_data):
-        user_data = validated_data.pop('user')
-        user = instance.user
+        username = validated_data.get('username')
+        first_name = validated_data.get('first_name')
+        last_name = validated_data.get('last_name')
+        email = validated_data.get('email')
+        password = validated_data.get('password')
+        bio = validated_data.get('bio', '')
 
-        instance.bio = validated_data.get('bio', instance.bio)
-        instance.save()
-
-        user.username = user_data.get('username', user.username)
-        user.email = user_data.get('email', user.email)
-        user.first_name = user_data.get('first_name', user.first_name)
-        user.last_name = user_data.get('last_name', user.last_name)
-        user.password = user_data.get('password', user.password)
+        user = User(username=username, first_name=first_name, last_name=last_name, email=email)
+        user.set_password(password)  # Hashing the password
         user.save()
 
-        return instance
+        # Create Profile for the user
+        Profile.objects.create(user=user, bio=bio)
+
+        return user
