@@ -34,6 +34,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     authentication_classes = [SessionAuthentication, TokenAuthentication] #auth classnya bro
     permission_classes = [IsAuthenticated] #permission
+    http_method_names = ['post', 'put', 'patch']
 
     def get_queryset(self):
         return Profile.objects.filter(user=self.request.user)

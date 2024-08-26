@@ -36,7 +36,12 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['username', 'email', 'bio']
+        fields = ['username', 'email', 'bio', 'profile_pic']
+    
+    def update(self, instance, validated_data):
+        if 'profile_pic' in validated_data:
+            instance.profile_picture.delete(save=False)  # Delete the old image if a new one is uploaded
+        return super().update(instance, validated_data)
     
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
