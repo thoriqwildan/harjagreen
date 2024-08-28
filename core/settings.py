@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-&c%dxhw1ers)khb^bwo^f$lgw*n!&&0gak_7fjt78!mi-#5bq$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.vercel.app']
 
 
 # Application definition
@@ -82,12 +82,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'harjadb',
-        'USER': 'harjaadmin',
-        'PASSWORD': 'harjaadmin14#',
-        'HOST':'localhost',
-        'PORT':'3306',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'verceldb',
+        'USER': 'default',
+        'PASSWORD': '5IQb9fHNmEqw',
+        'HOST':'ep-fragrant-thunder-a4n4cu8i-pooler.us-east-1.aws.neon.tech',
+        'PORT':'5432',
     }
 }
 
